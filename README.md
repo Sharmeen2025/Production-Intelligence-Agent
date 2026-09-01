@@ -24,8 +24,17 @@ The core orchestration engine is built on **LangGraph**, routing queries through
 4. Initialize the database schema: `python seed.py`
 5. Launch the application: `python -m streamlit run app.py`
 
+## Acknowledgements
+* The open-source communities behind LangChain, LangGraph, and Streamlit.
+* Groq for the high-speed model inference.
+* Neon for the serverless PostgreSQL architecture.
+
 ## Author
-**Sharmeen Bukhtawar**
+**Sharmeen Bukhtawar**  
+MSc Artificial Intelligence & Data Science  
+BSc (Hons) Biomedical Science  
+GitHub: [https://github.com/Sharmeen2025](https://github.com/Sharmeen2025)  
+LinkedIn: [https://www.linkedin.com/in/sharmeen-bukhtawar-2b0568265/](https://www.linkedin.com/in/sharmeen-bukhtawar-2b0568265/)
 
 ## License
 This project is licensed under the MIT License - see the LICENSE file for details.
