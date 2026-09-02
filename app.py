@@ -8,30 +8,13 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Enterprise UI styling
+# 1. CSS to kill the empty space where the avatar used to be
 st.markdown("""
 <style>
-    .header-container { 
-        display: flex; 
-        align-items: center; 
-        gap: 12px; 
-        margin-bottom: 2rem; 
-    }
-    .title-text { 
-        font-size: 1.5rem; 
-        font-weight: 600; 
-        color: #0F172A; 
-        margin: 0; 
-    }
-    /* 1. Hide the avatars entirely */
-    [data-testid="stChatMessageAvatar"] {
-        display: none !important;
-    }
-    /* 2. Remove the empty gap left by the hidden avatar */
-    [data-testid="stChatMessage"] {
-        gap: 0 !important;
-        padding-left: 0.5rem;
-    }
+    .header-container { display: flex; align-items: center; gap: 12px; margin-bottom: 2rem; }
+    .title-text { font-size: 1.5rem; font-weight: 600; color: #0F172A; margin: 0; }
+    [data-testid="stChatMessageAvatar"] { display: none !important; width: 0 !important; margin: 0 !important; }
+    [data-testid="stChatMessage"] { padding-left: 0 !important; gap: 0 !important; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -58,35 +41,39 @@ st.markdown("""
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# Render chat history with zero avatar clutter
+# 2. The Invisible Pixel Hack
+BLANK = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
+
 for msg in st.session_state.messages:
     if isinstance(msg, HumanMessage):
-        with st.chat_message("user", avatar=None):
+        with st.chat_message("user", avatar=BLANK):
             st.write(msg.content)
     elif isinstance(msg, AIMessage) and msg.content:
-        with st.chat_message("assistant", avatar=None):
+        with st.chat_message("assistant", avatar=BLANK):
             st.write(msg.content)
 
 if prompt := st.chat_input("Message the agent..."):
     user_msg = HumanMessage(content=prompt)
     st.session_state.messages.append(user_msg)
     
-    with st.chat_message("user", avatar=None):
+    with st.chat_message("user", avatar=BLANK):
         st.write(prompt)
     
-    with st.chat_message("assistant", avatar=None):
+    with st.chat_message("assistant", avatar=BLANK):
         response_placeholder = st.empty()
         final_answer = ""
         
         try:
             inputs = {"messages": st.session_state.messages}
-            
-            # Transient spinner that leaves no UI trace upon completion
             with st.spinner("Processing request..."):
                 for event in agent_executor.stream(inputs, stream_mode="updates"):
                     for node_name, state_update in event.items():
                         new_messages = state_update.get("messages", [])
                         for msg in new_messages:
+                            # Pop-up alert so you know it actually fired the tool
+                            if hasattr(msg, 'tool_calls') and msg.tool_calls:
+                                st.toast(f"Agent executing: {msg.tool_calls[0]['name']}")
+                                
                             if isinstance(msg, AIMessage) and msg.content:
                                 final_answer = msg.content
                                 st.session_state.messages.append(msg)
