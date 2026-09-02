@@ -1,5 +1,5 @@
 import streamlit as st
-from langchain_core.messages import HumanMessage, AIMessage, ToolMessage
+from langchain_core.messages import HumanMessage, AIMessage
 from graph import agent_executor
 
 st.set_page_config(
@@ -8,15 +8,31 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Minimalist Custom CSS
+# Enterprise UI styling
 st.markdown("""
 <style>
-    .header-container { display: flex; align-items: center; gap: 12px; margin-bottom: 2rem; }
-    .title-text { font-size: 1.5rem; font-weight: 600; color: #0F172A; margin: 0; }
+    .header-container { 
+        display: flex; 
+        align-items: center; 
+        gap: 12px; 
+        margin-bottom: 2rem; 
+    }
+    .title-text { 
+        font-size: 1.5rem; 
+        font-weight: 600; 
+        color: #0F172A; 
+        margin: 0; 
+    }
+    /* Hide avatar column footprint completely */
+    div[data-testid="stChatMessageAvatar"] {
+        display: none !important;
+    }
+    div[data-testid="stChatMessage"] {
+        padding-left: 0.5rem;
+    }
 </style>
 """, unsafe_allow_html=True)
 
-# Consumer-style Sidebar
 with st.sidebar:
     st.markdown("### Settings")
     st.toggle("Enable Web Search", value=True)
@@ -26,7 +42,6 @@ with st.sidebar:
     st.caption("Sales Database Query")
     st.caption("Revenue Analysis")
 
-# Header with Custom Interlocking Data Node Logo
 st.markdown("""
 <div class="header-container">
     <svg width="32" height="32" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -41,30 +56,31 @@ st.markdown("""
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# Render Chat with minimal Material Design icons
+# Render chat history with zero avatar clutter
 for msg in st.session_state.messages:
     if isinstance(msg, HumanMessage):
-        with st.chat_message("user", avatar=":material/person:"):
+        with st.chat_message("user", avatar=None):
             st.write(msg.content)
     elif isinstance(msg, AIMessage) and msg.content:
-        with st.chat_message("assistant", avatar=":material/memory:"):
+        with st.chat_message("assistant", avatar=None):
             st.write(msg.content)
 
 if prompt := st.chat_input("Message the agent..."):
     user_msg = HumanMessage(content=prompt)
     st.session_state.messages.append(user_msg)
     
-    with st.chat_message("user", avatar=":material/person:"):
+    with st.chat_message("user", avatar=None):
         st.write(prompt)
     
-    with st.chat_message("assistant", avatar=":material/memory:"):
-        trace_placeholder = st.empty()
+    with st.chat_message("assistant", avatar=None):
         response_placeholder = st.empty()
         final_answer = ""
         
         try:
             inputs = {"messages": st.session_state.messages}
-            with trace_placeholder.status("Processing workflow...", expanded=False) as status:
+            
+            # Transient spinner that leaves no UI trace upon completion
+            with st.spinner("Processing request..."):
                 for event in agent_executor.stream(inputs, stream_mode="updates"):
                     for node_name, state_update in event.items():
                         new_messages = state_update.get("messages", [])
@@ -72,7 +88,6 @@ if prompt := st.chat_input("Message the agent..."):
                             if isinstance(msg, AIMessage) and msg.content:
                                 final_answer = msg.content
                                 st.session_state.messages.append(msg)
-                status.update(label="Complete", state="complete", expanded=False)
             
             if final_answer:
                 response_placeholder.write(final_answer)
