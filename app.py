@@ -41,23 +41,23 @@ st.markdown("""
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# Render Chat with minimal letter block avatars ('U' and 'A')
+# Render Chat with minimal Material Design icons
 for msg in st.session_state.messages:
     if isinstance(msg, HumanMessage):
-        with st.chat_message("user", avatar="U"):
+        with st.chat_message("user", avatar=":material/person:"):
             st.write(msg.content)
     elif isinstance(msg, AIMessage) and msg.content:
-        with st.chat_message("assistant", avatar="A"):
+        with st.chat_message("assistant", avatar=":material/memory:"):
             st.write(msg.content)
 
 if prompt := st.chat_input("Message the agent..."):
     user_msg = HumanMessage(content=prompt)
     st.session_state.messages.append(user_msg)
     
-    with st.chat_message("user", avatar="U"):
+    with st.chat_message("user", avatar=":material/person:"):
         st.write(prompt)
     
-    with st.chat_message("assistant", avatar="A"):
+    with st.chat_message("assistant", avatar=":material/memory:"):
         trace_placeholder = st.empty()
         response_placeholder = st.empty()
         final_answer = ""
