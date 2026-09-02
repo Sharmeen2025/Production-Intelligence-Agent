@@ -1,0 +1,9 @@
+[theme]
+primaryColor = "#1E3A8A"              # Deep Navy
+backgroundColor = "#FFFFFF"           # Clean White
+secondaryBackgroundColor = "#F8FAFC"  # Very light slate for the sidebar
+textColor = "#0F172A"                 # Dark Slate/Black
+font = "sans serif"
+
+[server]
+headless = true

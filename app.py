@@ -23,11 +23,13 @@ st.markdown("""
         color: #0F172A; 
         margin: 0; 
     }
-    /* Hide avatar column footprint completely */
-    div[data-testid="stChatMessageAvatar"] {
+    /* 1. Hide the avatars entirely */
+    [data-testid="stChatMessageAvatar"] {
         display: none !important;
     }
-    div[data-testid="stChatMessage"] {
+    /* 2. Remove the empty gap left by the hidden avatar */
+    [data-testid="stChatMessage"] {
+        gap: 0 !important;
         padding-left: 0.5rem;
     }
 </style>

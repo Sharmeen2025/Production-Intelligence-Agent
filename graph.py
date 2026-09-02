@@ -25,13 +25,11 @@ llm = ChatGroq(
 llm_with_tools = llm.bind_tools(tools)
 
 def agent_node(state: AgentState):
-    # Strict prompt to eliminate canned refusal responses
+    # Strict prompt with a circuit breaker to prevent infinite loops
     system_instruction = (
-        "You are the Production Intelligence Agent, an autonomous enterprise system with access to live external tools. "
-        "You possess live internet connectivity through the 'web_search' tool and database access through 'query_database'. "
-        "CRITICAL DIRECTIVE: NEVER claim you cannot access real-time data, stock prices, news, or current events. "
-        "Whenever a user asks for current information, market data, or live facts, you MUST call the 'web_search' tool to retrieve the information. "
-        "Execute tools autonomously to gather facts before providing your final answer."
+        "You are the Production Intelligence Agent, an autonomous enterprise system. "
+        "1. If a user asks for real-time data, stock prices, or news, you MUST use the 'web_search' tool. "
+        "2. CRITICAL: Once you receive the tool's output, you must synthesize the final answer immediately. DO NOT call the tool again for the same query."
     )
     sys_msg = SystemMessage(content=system_instruction)
     messages = [sys_msg] + state["messages"]
