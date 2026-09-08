@@ -13,8 +13,12 @@ st.markdown("""
 <style>
     .header-container { display: flex; align-items: center; gap: 12px; margin-bottom: 2rem; }
     .title-text { font-size: 1.5rem; font-weight: 600; color: #0F172A; margin: 0; }
+    /* 1. Hide the avatars entirely */
     [data-testid="stChatMessageAvatar"] { display: none !important; width: 0 !important; margin: 0 !important; }
+    /* 2. Remove the empty gap left by the hidden avatar */
     [data-testid="stChatMessage"] { padding-left: 0 !important; gap: 0 !important; }
+    /* 3. Kill the Streamlit "Running" notification in the top right */
+    [data-testid="stStatusWidget"] { display: none !important; visibility: hidden !important; }
 </style>
 """, unsafe_allow_html=True)
 

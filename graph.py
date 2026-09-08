@@ -7,17 +7,19 @@ from langchain_groq import ChatGroq
 from langchain_core.messages import BaseMessage, SystemMessage
 from dotenv import load_dotenv
 
-from tools import web_search, calculate_metrics, query_database
+from tools import web_search, calculate_metrics, query_database, get_stock_price
 
 load_dotenv()
 
 class AgentState(TypedDict):
     messages: Annotated[list[BaseMessage], add_messages]
 
-tools = [web_search, calculate_metrics, query_database]
+# Add the new stock tool to the agent's arsenal
+tools = [web_search, calculate_metrics, query_database, get_stock_price]
 
+# Use the Llama 3.1 70B model, which is Groq's gold-standard for tool execution
 llm = ChatGroq(
-    model_name="openai/gpt-oss-20b",
+    model_name="llama-3.1-70b-versatile",
     temperature=0,
     api_key=os.getenv("GROQ_API_KEY")
 )
@@ -26,11 +28,9 @@ llm_with_tools = llm.bind_tools(tools)
 
 def agent_node(state: AgentState):
     system_instruction = (
-        "You are the Production Intelligence Agent. You have FULL PERMISSION to fetch live stock prices and news. "
-        "CRITICAL INSTRUCTION: If the user asks for a stock price (like NVIDIA), DO NOT SAY YOU CANNOT DO IT. "
-        "Instead, you MUST immediately call the 'web_search' tool. "
-        "If the tool returns an error, tell the user the exact error. "
-        "NEVER give canned responses about consulting Yahoo Finance or brokers."
+        "You are the Production Intelligence Agent. "
+        "If the user asks for a stock price, YOU MUST use the 'get_stock_price' tool and provide the ticker symbol. "
+        "Do not answer without using the tools."
     )
     sys_msg = SystemMessage(content=system_instruction)
     messages = [sys_msg] + state["messages"]
@@ -38,10 +38,8 @@ def agent_node(state: AgentState):
     return {"messages": [response]}
 
 workflow = StateGraph(AgentState)
-
 workflow.add_node("agent", agent_node)
 workflow.add_node("tools", ToolNode(tools))
-
 workflow.add_edge(START, "agent")
 workflow.add_conditional_edges("agent", tools_condition)
 workflow.add_edge("tools", "agent")
