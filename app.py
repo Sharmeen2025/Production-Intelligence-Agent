@@ -17,8 +17,8 @@ st.markdown("""
     [data-testid="stChatMessageAvatar"] { display: none !important; width: 0 !important; margin: 0 !important; }
     /* 2. Remove the empty gap left by the hidden avatar */
     [data-testid="stChatMessage"] { padding-left: 0 !important; gap: 0 !important; }
-    /* 3. Kill the Streamlit "Running" notification in the top right */
-    [data-testid="stStatusWidget"] { display: none !important; visibility: hidden !important; }
+    /* 3. Aggressively kill the Streamlit "Running" notification in the top right */
+    [data-testid="stStatusWidget"], [data-testid="stAppViewContainer"] > div:first-child { display: none !important; opacity: 0 !important; pointer-events: none !important; }
 </style>
 """, unsafe_allow_html=True)
 
