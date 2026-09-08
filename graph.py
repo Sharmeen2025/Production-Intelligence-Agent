@@ -19,7 +19,7 @@ tools = [web_search, calculate_metrics, query_database, get_stock_price]
 
 # Use the Llama 3.1 70B model, which is Groq's gold-standard for tool execution
 llm = ChatGroq(
-    model_name="llama-3.1-70b-versatile",
+    model_name="openai/gpt-oss-20b",
     temperature=0,
     api_key=os.getenv("GROQ_API_KEY")
 )
