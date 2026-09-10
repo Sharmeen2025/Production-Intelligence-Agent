@@ -3,6 +3,7 @@
 An autonomous, state-machine-driven AI agent built to execute deterministic business workflows. Unlike standard conversational text models or document-constrained RAG pipelines, this system utilizes a cyclical orchestration architecture to autonomously select and execute external tools, ensuring grounded data retrieval and mathematical accuracy.
 
 ## System Architecture
+
 ```mermaid
 graph TD
     A[User Query] --> B(LangGraph State Machine)
@@ -12,8 +13,6 @@ graph TD
     C -->|SQLAlchemy| F[PostgreSQL DB]
     D & E & F -->|Observations| B
     B -->|Final Synthesis| G[Streamlit Interface]
-    
-The core orchestration engine is built on **LangGraph**, routing queries through a resilient execution loop. The agent evaluates the request, validates tool schemas, executes the tool, and self-corrects if external systems (e.g., databases or APIs) return execution errors.
 
 ## Core Capabilities
 *   **Stateful Memory:** Manages complex, multi-step conversation context without context degradation.
