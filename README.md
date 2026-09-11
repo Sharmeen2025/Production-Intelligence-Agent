@@ -2,6 +2,9 @@
 
 An autonomous, state-machine-driven AI agent built to execute deterministic business workflows. Unlike standard conversational text models or document-constrained RAG pipelines, this system utilizes a cyclical orchestration architecture to autonomously select and execute external tools, ensuring grounded data retrieval and mathematical accuracy.
 
+https://github.com/user-attachments/assets/23ac5f94-1d71-41a5-9d91-e8c0c2c79987
+
+
 ## System Architecture
 
 ```mermaid
